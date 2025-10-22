@@ -98,6 +98,103 @@ Default structure:
   ```
 
 ---
+## WireMock request configuration** that matches both a URL and a specific **request body** 👇
 
-Would you like me to show a **diagram** of how these components interact (Request → WireMock → Response)?
+```json
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/v1/user",
+    "bodyPatterns": [
+      {
+        "equalToJson": {
+          "name": "John",
+          "email": "john@example.com"
+        }
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "body": "{ \"message\": \"User created successfully\" }",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
+```
+
+### 🔍 Explanation
+
+* **`method`** → HTTP method (e.g., POST, GET, PUT).
+* **`url`** → The endpoint path you want to mock.
+* **`bodyPatterns`** → Used to match the incoming request body.
+
+  * `equalToJson` → Ensures the JSON body matches exactly.
+  * Other options:
+
+    * `contains` → match if body contains text
+    * `matchesJsonPath` → match specific JSON paths
+* **`response`** → What WireMock returns when the request matches.
+
+## (a *partial match*): example
+
+```json
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/v1/user",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": "$[?(@.email == 'john@example.com')]"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "body": "{ \"message\": \"Email matched successfully\" }",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
+```
+
+
+
+## `bodyPatterns` array can contain **one or more patterns** — each pattern describes how the request body should be matched.
+
+Here are the **supported pattern types** you can use inside `bodyPatterns`:
+
+| Pattern type      | Description                                 | Example                                   |
+| ----------------- | ------------------------------------------- | ----------------------------------------- |
+| `equalTo`         | Matches the exact plain text body           | `"equalTo": "simple text"`                |
+| `contains`        | Matches if the body contains specific text  | `"contains": "keyword"`                   |
+| `matches`         | Matches if the body matches a regex pattern | `"matches": ".*success.*"`                |
+| `doesNotMatch`    | Matches if body does *not* match regex      | `"doesNotMatch": ".*error.*"`             |
+| `equalToJson`     | Matches exact JSON (ignores spacing)        | `"equalToJson": { "id": 1 }`              |
+| `matchesJsonPath` | Matches based on JSONPath expression        | `"matchesJsonPath": "$.user.name"`        |
+| `equalToXml`      | Matches exact XML                           | `"equalToXml": "<user><id>1</id></user>"` |
+| `matchesXPath`    | Matches XML using XPath                     | `"matchesXPath": "/user/id[text()='1']"`  |
+
+✅ You can use **multiple patterns** in the same `bodyPatterns` array — all must match for the stub to trigger.
+
+### Example with multiple patterns:
+
+```json
+"bodyPatterns": [
+  { "contains": "orderId" },
+  { "matchesJsonPath": "$.user.name" }
+]
+```
+
+This means:
+
+* The request body must contain the text `orderId`, **and**
+* The JSON body must have a field `user.name`.
+
+
+
+
+
 
