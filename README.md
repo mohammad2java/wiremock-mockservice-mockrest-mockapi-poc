@@ -1,7 +1,7 @@
 # wiremock-mockservice-mockrest-mockapi-poc
 
 
-## In **WireMock**, the key components are the building blocks that define how it mocks HTTP services. Here’s a simple breakdown 👇
+## => In **WireMock**, the key components are the building blocks that define how it mocks HTTP services. Here’s a simple breakdown 👇
 
 ---
 
@@ -98,7 +98,7 @@ Default structure:
   ```
 
 ---
-## WireMock request configuration** that matches both a URL and a specific **request body** 👇
+## => WireMock request configuration** that matches both a URL and a specific **request body** 👇
 
 ```json
 {
@@ -162,7 +162,7 @@ Default structure:
 
 
 
-## `bodyPatterns` array can contain **one or more patterns** — each pattern describes how the request body should be matched.
+## =>`bodyPatterns` array can contain **one or more patterns** — each pattern describes how the request body should be matched.
 
 Here are the **supported pattern types** you can use inside `bodyPatterns`:
 
@@ -194,7 +194,7 @@ This means:
 * The JSON body must have a field `user.name`.
 
 
-## You can keep response json in seperate file instead of mappings file..below is complete informations.
+## => You can keep response json in seperate file instead of mappings file..below is complete informations.
 
 Perfect 👍 — let’s go a bit deeper into what happens inside the
 
@@ -302,7 +302,7 @@ wiremock/
 
 
 
-## multiple ways to integrate WireMock**, depending on your use case (local testing, CI/CD, or embedded in code).
+## => Multiple ways to integrate WireMock**, depending on your use case (local testing, CI/CD, or embedded in code).
 
 ---
 
