@@ -194,7 +194,111 @@ This means:
 * The JSON body must have a field `user.name`.
 
 
+## You can keep response json in seperate file instead of mappings file..below is complete informations.
 
+Perfect 👍 — let’s go a bit deeper into what happens inside the
+
+```
+/wiremock
+ ├── mappings/
+ └── __files/
+```
+
+folders and how WireMock uses them.
+
+---
+
+## 🗂️ **1. `/mappings/` Folder**
+
+This folder contains all your **stub mapping files** — the heart of WireMock.
+Each file describes **what kind of request** WireMock should expect and **what response** it should return.
+
+### 🧩 Example: `create-user.json`
+
+```json
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/v1/user",
+    "bodyPatterns": [
+      { "matchesJsonPath": "$[?(@.email == 'john@example.com')]" }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "user-created.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
+```
+
+### 🔍 How it works:
+
+* This file lives inside `/mappings/`.
+* When WireMock starts, it automatically **loads all JSON files** from `/mappings/` and registers them as stubs.
+* Each stub tells WireMock:
+
+  * Which **URL** and **HTTP method** to match.
+  * Optionally, which **request body**, **headers**, or **query params** to match.
+  * What **response** to send (directly in `body`, or using a file via `bodyFileName`).
+
+---
+
+## 📁 **2. `/__files/` Folder**
+
+This folder stores the **actual response body files** — typically JSON, XML, or plain text.
+
+### 🧩 Example: `user-created.json`
+
+Located at:
+
+```
+/wiremock/__files/user-created.json
+```
+
+Contents:
+
+```json
+{
+  "message": "User created successfully",
+  "userId": 123
+}
+```
+
+### 🔍 How it works:
+
+* When your mapping uses `"bodyFileName": "user-created.json"`,
+  WireMock looks for that file inside `/__files/` and returns its content as the HTTP response body.
+* This keeps your stubs **clean and readable**, especially when responses are large.
+
+---
+
+## 🧠 **Why use this structure**
+
+| Benefit                          | Explanation                                                   |
+| -------------------------------- | ------------------------------------------------------------- |
+| **Separation of logic and data** | Keeps mappings (rules) separate from large response payloads. |
+| **Reusability**                  | You can reuse the same response file for multiple stubs.      |
+| **Organization**                 | Easy to manage multiple mock endpoints — one mapping per API. |
+| **Maintainability**              | Easier to update responses without touching logic.            |
+
+---
+
+### 🏗️ Typical Folder Layout Example
+
+```
+wiremock/
+├── mappings/
+│   ├── get-user.json
+│   ├── create-user.json
+│   └── delete-user.json
+└── __files/
+    ├── user-details.json
+    ├── user-created.json
+    └── user-deleted.json
+```
 
 
 
