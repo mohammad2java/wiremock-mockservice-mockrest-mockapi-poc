@@ -1,0 +1,14 @@
+{
+    "request": {
+      "method": "GET",
+      "url": "/api/xml"
+    },
+    "response": {
+      "status": 200,
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response><message>Hello, XML!</message></response>",
+      "headers": {
+        "Content-Type": "application/xml"
+      }
+    }
+  }
+  
