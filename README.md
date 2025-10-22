@@ -302,3 +302,149 @@ wiremock/
 
 
 
+## multiple ways to integrate WireMock**, depending on your use case (local testing, CI/CD, or embedded in code).
+
+---
+
+## 🧱 **1. Standalone JAR (Manual Run)**
+
+✅ **Most common for local testing**
+
+* Download the WireMock standalone JAR from [wiremock.org](https://wiremock.org).
+* Run it with:
+
+  ```bash
+  java -jar wiremock-standalone-x.x.x.jar --port 8080
+  ```
+* Default folder structure:
+
+  ```
+  /wiremock
+   ├── mappings/
+   └── __files/
+  ```
+* Place your stub JSONs and response files there.
+* Access UI at `http://localhost:8080/__admin/`.
+
+👉 Good for **manual testing**, **mocking external APIs**, or **integration testing**.
+
+---
+
+## 🐳 **2. Using Docker Container**
+
+✅ **Most popular for CI/CD pipelines or team environments**
+
+* Pull the official image:
+
+  ```bash
+  docker pull wiremock/wiremock
+  ```
+* Run with volume mount:
+
+  ```bash
+  docker run -it --rm \
+    -p 8080:8080 \
+    -v $(pwd)/wiremock:/home/wiremock \
+    wiremock/wiremock:latest
+  ```
+
+💡 Folder `/home/wiremock` inside the container maps to your local stub files:
+
+```
+wiremock/
+ ├── mappings/
+ └── __files/
+```
+
+👉 Ideal for **team-shared mocks** or **containerized test setups**.
+
+---
+
+## 🧩 **3. Embedded WireMock (Java Library)**
+
+✅ **Used for integration/unit testing inside your Java code**
+
+Add dependency (Maven):
+
+```xml
+<dependency>
+  <groupId>com.github.tomakehurst</groupId>
+  <artifactId>wiremock-jre8</artifactId>
+  <version>2.35.0</version>
+  <scope>test</scope>
+</dependency>
+```
+
+Use in tests:
+
+```java
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import com.github.tomakehurst.wiremock.WireMockServer;
+
+public class MyTest {
+  WireMockServer wireMockServer = new WireMockServer(8080);
+
+  @Before
+  public void setup() {
+    wireMockServer.start();
+    stubFor(get(urlEqualTo("/api/test"))
+      .willReturn(aResponse().withBody("Hello WireMock")));
+  }
+
+  @After
+  public void teardown() {
+    wireMockServer.stop();
+  }
+}
+```
+
+👉 Perfect for **JUnit integration** and **mocking external services in test cases**.
+
+---
+
+## ☁️ **4. WireMock Cloud (Hosted Service)**
+
+✅ **Managed solution from WireMock.io**
+
+* No need to run locally — your stubs live in the cloud.
+* Provides a **web UI**, collaboration tools, and versioning.
+* Useful for **shared mocks** across teams or **external API simulations**.
+
+Website: [https://www.wiremock.io](https://www.wiremock.io)
+
+---
+
+## 🔗 **5. WireMock via Testcontainers**
+
+✅ **Dynamic containerized testing in Java**
+
+Use with [Testcontainers](https://www.testcontainers.org/):
+
+```java
+import org.testcontainers.containers.WireMockContainer;
+
+public class WireMockContainerTest {
+  @Container
+  private static final WireMockContainer wiremock =
+      new WireMockContainer("wiremock/wiremock:latest")
+          .withMapping("test", WireMockContainerTest.class, "test-mapping.json");
+}
+```
+
+👉 Ideal for **isolated integration tests** that spin up WireMock automatically during test execution.
+
+---
+
+## ⚙️ **Summary Table**
+
+| Method               | Environment            | Typical Use                 | Pros                    |
+| -------------------- | ---------------------- | --------------------------- | ----------------------- |
+| **Standalone JAR**   | Local                  | Manual or simple automation | Easy setup, lightweight |
+| **Docker Container** | Local / CI             | Shared mocks, automation    | Consistent, portable    |
+| **Embedded Java**    | Unit/Integration Tests | Full test control           | No external setup       |
+| **WireMock Cloud**   | Cloud                  | Collaboration, remote APIs  | Managed, shareable      |
+| **Testcontainers**   | CI / Integration Tests | Ephemeral mocks             | Fully automated         |
+
+
+
+
